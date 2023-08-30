@@ -13,8 +13,8 @@ Windows:
 `pip install -r installthis.txt`
 
 Create .env file with:
-EMAIL = "email@email.com"
-PSW = "thepassword"
+```EMAIL = "email@email.com"
+PSW = "thepassword"```
 
 Start:
 
