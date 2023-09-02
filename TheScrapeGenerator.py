@@ -20,7 +20,7 @@ class ScriptGenerator:
             test = soup.find_all('div', class_='gb-container gb-container-0e5155aa gb-container-529120bd')
             tasks = [process_article(x) for x in test]
             results = await asyncio.gather(*tasks)
-            full_text = f"Create a youtube short about: {results[-1]} Settings: Use a male old husky British voice. Show subtitles in the video. Video length around 30 seconds. Clear end. Engaging video. From 20 to 30 second Max"
+            full_text = f"Create a youtube short about: {results[-1]} Settings: Use a male old husky British voice. Show subtitles in the video. Video length from 21 to 24 seconds. Clear end. Engaging video."
             print(full_text)
             return full_text
 
