@@ -14,8 +14,13 @@ Windows:
 
 Create .env file with:
 ```
-EMAIL = "email@email.com"
-PSW = "thepassword"
+EMAIL = ""
+PSW = ""
+GMAIL = ''
+GMPSW = ""
+XPSW = ""
+TKTKPSW = ""
+TGTOKEN = ""
 ```
 Start:
 
