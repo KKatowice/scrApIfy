@@ -35,11 +35,11 @@ GPSWD = os.getenv("GMPSW")
 XPSWD = os.getenv("XPSW")
 TKTKPSWD = os.getenv("TKTKPSW")
 TGTKN = os.getenv("TGTOKEN")
-FREE = False
+FREE = True
 patzDriver = "/usr/bin/chromium-browser"
 pathzDownl = "/home/katowice/Downloads/testVideos"
 
-listHashtags = "#TodayInHistory #WhatHappenedToday #History #HistoryVideos #HistoricalMoment #PastTime #TimeTravel #HistoricalEvents #VideoHistory #DailyHistory #Today "
+listHashtags = "#TodayInHistory #WhatHappenedToday #History #HistoryVideos #HistoricalMoment #PastTime #TimeTravel #HistoricalEvents #VideoHistory #DailyHistory #Today #Shorts "
 
 def getCode():
     sessionz = imaplib.IMAP4_SSL(config.imap_server,config.imap_port)
