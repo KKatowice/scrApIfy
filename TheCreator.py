@@ -13,7 +13,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 import os
 from dotenv import load_dotenv
 from tiktok_uploader.upload import upload_video
@@ -22,7 +22,9 @@ import tweepy
 import json
 import telegram
 import logging
-
+class ElementNotFoundException(Exception):
+    print("Element not found or not clickable within the timeout.")
+    pass
 # Load environment variables from the .env file
 load_dotenv()
 # Access the environment variables
@@ -33,7 +35,7 @@ GPSWD = os.getenv("GMPSW")
 XPSWD = os.getenv("XPSW")
 TKTKPSWD = os.getenv("TKTKPSW")
 TGTKN = os.getenv("TGTOKEN")
-FREE = True
+FREE = False
 patzDriver = "/usr/bin/chromium-browser"
 pathzDownl = "/home/katowice/Downloads/testVideos"
 
@@ -70,7 +72,7 @@ def getCode():
             break
     return finalCode
 
-def upVid_tktk(path,title):
+async def upVid_tktk(path,title):
     print("entrato upvidtk")
     upload_video(path, title, headless=True, username='pastpeek',password=TKTKPSWD, cookies=os.getcwd()+"/cookies.txt")
 
@@ -79,7 +81,7 @@ async def upVid_X(path,title,desc):
     upUrl = 'https://twitter.com/i/flow/login'
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
-    #chrome_options.add_argument('--headless')
+
     chrome_options.binary_location = patzDriver
     browser = webdriver.Chrome(options=chrome_options)
     print("aperta pag X")
@@ -118,12 +120,19 @@ async def upVid_X(path,title,desc):
     upBtn.click() """
     upBtn.send_keys(path)
     print("uppo file")
-    time.sleep(1)
+    time.sleep(3)
     #css-901oao r-1awozwy r-18jsvk2 r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0
-    upBtn = browser.find_element(By.XPATH, "//div[@class='css-901oao r-1awozwy r-18jsvk2 r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0']")
-    if upBtn.is_enabled():
-        print("Ci sei ????")
+    try:    
+        upBtn = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-901oao r-1awozwy r-18jsvk2 r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0']")))
+        WebDriverWait(browser, 20).until(EC.visibility_of(upBtn))
         upBtn.click()
+    except TimeoutException:
+    # Raise a custom exception if the element is not found or not clickable
+        raise ElementNotFoundException("Element not found or not clickable within the timeout.")
+    """ if upBtn.is_displayed() and upBtn.is_enabled():
+        print("Ci sei ???? secondo me esiste", upBtn.is_displayed() , upBtn.is_enabled())
+        upBtn.click()
+        print("lo clicco e crasha o non lo clicco ? ") """
     #div css-18t94o4 css-1dbjc4n r-l5o3uw r-42olwf r-sdzlij r-1phboty r-rs99b7 r-19u6a5r r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr
     postBtn = WebDriverWait(browser, 300).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-18t94o4 css-1dbjc4n r-l5o3uw r-42olwf r-sdzlij r-1phboty r-rs99b7 r-19u6a5r r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr']")))
     postBtn.click()
@@ -323,63 +332,9 @@ async def doShit():
         print("sto pe quitta ciao")
         time.sleep(1)
         lstVid = getLastVid()
-        #os.rename(lstVid, title.text.strip())
-        #await upVid_X(browser,lstVid,title.text.strip(),"willBeADesc")
-    # -------------------------------- TWITTER ---------------------------------
-        """upUrl = 'https://twitter.com/i/flow/login'
-        
-        print("sbrocco no se vede")
-        browser.get(upUrl)
-        time.sleep(5)
-        
-        browser.find_element(By.XPATH, "//input[@class='r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu']").send_keys(GML)
-        time.sleep(2)
-        nxt = WebDriverWait(browser, 100).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-ywje51 r-usiww2 r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr r-13qz1uu']")))
-        nxt.click()
-        #input r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu
-        time.sleep(1.5)
-        uNameInp = browser.find_element(By.XPATH, "//input[@class='r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu']").send_keys('past_peek')
-        #div css-18t94o4 css-1dbjc4n r-1m3jxhj r-sdzlij r-1phboty r-rs99b7 r-19yznuf r-64el8z r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr
-        time.sleep(0.5)
-        nxt = WebDriverWait(browser, 100).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-19yznuf r-64el8z r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr']")))
-        nxt.click()
-        # input r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu
-        time.sleep(1.5)
-        pswInp = browser.find_element(By.XPATH, "//input[@class='r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-fdjqy7 r-13qz1uu']").send_keys(XPSWD)
-        # div css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-19yznuf r-64el8z r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr
-        time.sleep(0.5)
-        nxt = WebDriverWait(browser, 100).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-18t94o4 css-1dbjc4n r-sdzlij r-1phboty r-rs99b7 r-19yznuf r-64el8z r-1ny4l3l r-1dye5f7 r-o7ynqc r-6416eg r-lrvibr']")))
-        nxt.click()
-        time.sleep(5)
-        upBtn = browser.find_element(By.XPATH, "//div[@class='css-1dbjc4n r-xoduu5 r-xyw6el r-mk0yit r-13qz1uu']")
-        upBtn.click()
-        time.sleep(1)
-        #div css-18t94o4 css-1dbjc4n r-1niwhzg r-42olwf r-sdzlij r-1phboty r-rs99b7 r-5vhgbc r-mvpalk r-htfu76 r-2yi16 r-1qi8awa r-1ny4l3l r-o7ynqc r-6416eg r-lrvibr
-        upBtn = browser.find_element(By.XPATH, "//input[@class='r-8akbif r-orgf3d r-1udh08x r-u8s1d r-xjis5s r-1wyyakw']")
-
-
-        upBtn.send_keys(lstVid)
-        time.sleep(1)
-        #css-901oao r-1awozwy r-18jsvk2 r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0
-        upBtn = browser.find_element(By.XPATH, "//div[@class='css-901oao r-1awozwy r-18jsvk2 r-6koalj r-18u37iz r-16y2uox r-37j5jr r-a023e6 r-b88u0q r-1777fci r-rjixqe r-bcqeeo r-q4m81j r-qvutc0']")
-        upBtn.click()
-        #div css-18t94o4 css-1dbjc4n r-l5o3uw r-42olwf r-sdzlij r-1phboty r-rs99b7 r-19u6a5r r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr
-        postBtn = WebDriverWait(browser, 300).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='css-18t94o4 css-1dbjc4n r-l5o3uw r-42olwf r-sdzlij r-1phboty r-rs99b7 r-19u6a5r r-2yi16 r-1qi8awa r-1ny4l3l r-ymttw5 r-o7ynqc r-6416eg r-lrvibr']")))
-        postBtn.click()
-        time.sleep(1)
-        browser.quit()
-        time.sleep(10) """
-    #---------------------------------------------------------------------------
-        #upVid_tktk(lstVid,title.text.strip())
-        print("porcodio prima di bottg", lstVid)
-        #await botTg(lstVid,f"No nevvero, ecco il video di oggi o/ -Title- `{title.text.strip()}` - ") 
-        print("porcodio dopo di bottgasdijnoakjsndkjaonsd  RETURN")
+        print("porcodio prima di retunr", lstVid)
         return 
-        """ lstVid = getLastVid()
-        print("lstVid ",lstVid)
-        if(lstVid is not None):
-            await upShit(lstVid,title.text.strip())
-        time.sleep(900) """
+
     except Exception as e:
         print("Error: ", e)
         await botTg(None,"Error generating video [main]: "+str(e))
@@ -389,6 +344,7 @@ async def doShit():
 async def botTg(path,msg):
     application = telegram.Bot(TGTKN)
     chat_id = '-973874521'
+    lastmstgid = None
     if path:
         document = open(path, 'rb')
         async with application:
@@ -399,42 +355,34 @@ async def botTg(path,msg):
 
 async def upShit(lstVid,title):
 
-    #await botTg(lstVid,f"No nevvero, ecco il video di oggi o/ - {title} - ") 
+    await botTg(lstVid,f"No nevvero, ecco il video di oggi o/ - {title} - ") 
+    time.sleep(5)
+
     print("uppo su X")
-    await upVid_X(lstVid,title,"willBeADesc")
+    while(1):
+        try:
+            await upVid_X(lstVid,title,"willBeADesc")
+            print('secondo me lho uppato')
+            break
+        except Exception as e:
+            print("Error: ", e)
+            await botTg(None,"Error uploading video [upVid_X]: "+str(e)+"\n Riprovo tra 5 sec")
+            time.sleep(5)
+    
+    return
     time.sleep(10)
-    print("uppo su TikTOk")
-    upVid_tktk(lstVid,title)
-""" 
-async def mainShit():
-    titl = await doShit()
-    time.sleep(1)
-    if titl:
-        lstVid = getLastVid()
-        await upShit(lstVid,titl)
-    else:
-        print("PORCODIO") """
-""" def porcodio():
-    try:
-        chrome_options = webdriver.ChromeOptions()
-        #chrome_options.add_argument('--headless')
-        prefs = {"download.default_directory" : pathzDownl}
-        chrome_options.add_experimental_option("prefs",prefs)
-        chrome_options.binary_location = patzDriver
-        browser = webdriver.Chrome(options=chrome_options)
-        browser.get(config.LOGINURL)
-        time.sleep(3)
-        wait = WebDriverWait(browser, 10)  # Adjust the timeout as needed
-        element = wait.until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        element.send_keys(Keys.CONTROL + 't')
-        upUrl = 'https://twitter.com/i/flow/login'
-        print("sbrocco no se vede")
-        browser.get(upUrl)
-        time.sleep(10)
-    except WebDriverException as e:
-        print("Error: ", e)
-        return 
-porcodio()"""
+
+    print("uppo su TikTOk") #perche non funzioni sempre diomerda ??  ?????
+    while(1):
+        try:
+            await upVid_tktk(lstVid,title)
+            return
+        except Exception as e:
+            print("Error: ", e)
+            await botTg(None,"Error uploading video [upVid_tktk]: "+str(e)+"\n Riprovo tra 5 sec")
+            time.sleep(5)
+    print("Up GG")
+
 
 #asyncio.run(doShit())
 import sys
@@ -448,8 +396,6 @@ if len(sys.argv) < 2:
 arg1 = sys.argv[1]
 if arg1 == "-u" or arg1 == "--upload":
     lstVid = getLastVid()
-    """     file_name_without_extension = os.path.splitext(os.path.basename(lstVid))[0]
-    print("lstVid title: ",file_name_without_extension)#sistemanome """
     with open('todaytitle.json', 'r') as file:
         data = json.load(file)
     ttl = data['title']
@@ -458,5 +404,6 @@ elif arg1 == "-c" or arg1 == "--create":
     asyncio.run(doShit())
 else:
     print(f"Received argument: {arg1}")
+
 
 

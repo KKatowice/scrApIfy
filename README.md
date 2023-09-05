@@ -24,4 +24,9 @@ TGTOKEN = ""
 ```
 Start:
 
-`python TheCreator.py`
+`python testolo.py` create and upload
+
+or
+
+`python TheCreator -c` to create vid
+`python TheCreator -u` to upload vid
